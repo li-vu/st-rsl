@@ -8,6 +8,7 @@
             {"command": "rsl_type_check", "caption": "Type Check" },
             {"command": "rsl_pretty", "caption": "Pretty print" },
             {"command": "rsl_to_sml", "caption": "Translate to SML" },
+            {"command": "rsl_run_sml", "caption": "Run SML" },
             {"command": "rsl_to_sal", "caption": "Translate to SAL" }
         ]
     }
