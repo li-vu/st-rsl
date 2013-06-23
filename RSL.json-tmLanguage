@@ -1,0 +1,86 @@
+{
+  "name": "RSL",
+  "scopeName": "source.rsl",
+  "fileTypes": [
+    "rsl"
+  ],
+  "patterns": [
+    {
+      "name": "keyword.control.rsl",
+      "match": "\\b(Bool|Char|Int|Nat|Real|Text|Unit|abs|all|always|any|as|axiom|card|case|channel|chaos|class|devt_relation|dom|elems|else|elif|end|exists|extend|false|for|hd|hide|if|in|is|inds|initialise|int|inter|isin|len|let|local|ltl_assertion|object|of|out|post|pre|read|real|rng|scheme|skip|stop|swap|then|thoery|test_case|tl|transition_system|true|type|union|until|use|value|variable|while|with|write|~isin|-inflist|-infset|-list|-set)\\b"
+    },
+    {
+      "name": "comment.line.rsl",
+      "match": "--.*?\\n"
+    },
+    {
+      "name": "comment.line.rsl",
+      "match": "<:.*?:>"
+    },
+    {
+      "name": "comment.block.rsl",
+      "begin": "\\{!",
+      "end": "!\\}"
+    },
+    {
+      "name": "comment.block.documentation.rsl",
+      "begin": "/\\*",
+      "end": "\\*/"
+    },
+    {
+      "name": "entity.name.function.rsl",
+      "match": "^[ \\t]*([\\w]+)[ \\t]*:[^:]"
+    },
+    {
+      "match": "(^[ \\t]*)([\\w]+)([ \\t]*\\([\\w\\s, ]*\\)[ \\t]*)(is|as)\\b",
+      "name": "keyword.source.rsl",
+      "captures": {
+        "1": {
+          "name": "markup.raw.rsl"
+        },
+        "2": {
+          "name": "entity.name.function.rsl"
+        },
+        "3": {
+          "name": "variable.parameter.rsl"
+        },
+        "4": {
+          "name": "keyword.control.rsl"
+        }
+      }
+    },
+    {
+      "name": "storage.type.source.rsl",
+      "match": "\\b[A-Z]\\w*\\b"
+    },
+    {
+      "name": "constant.language.rsl",
+      "match": "(true|false)\\b"
+    },
+    {
+      "name": "string.quoted.double.rsl",
+      "match": "\".*\""
+    },
+    {
+      "name": "constant.character.rsl",
+      "match": "'.'"
+    },
+    {
+      "name": "keyword.operator.rsl",
+      "match": "(><|->|-m->|/\\\\|<=|<<=|<\\.|\\|\\||\\|\\^\\||-~->|-~m->|\\\\/|>=|>>|\\.>|\\+\\+|-\\\\|<->|=>|:-|~=|\\*\\*|<<|>>=|\\+>|!!|\\|=\\||#)"
+    },
+    {
+      "name": "constant.numeric.rsl",
+      "match": "[0-9][0-9]*\\.[0-9]+([eE][0-9]+)?[fd]?"
+    },
+    {
+      "name": "constant.numeric.rsl",
+      "match": "0x[0-9a-f]+"
+    },
+    {
+      "name": "constant.numeric.rsl",
+      "match": "[0-9]+"
+    }
+  ],
+  "uuid": "e6a290d8-8de8-4e49-a24b-60ce1481f816"
+}
