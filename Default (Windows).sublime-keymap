@@ -1,2 +1,6 @@
 [
+	{"keys": ["f6"], "command": "rsl_type_check"},
+	{"keys": ["shift+f6"], "command": "rsl_pretty"},
+	{"keys": ["f7"], "command": "rsl_to_sml"},
+	{"keys": ["shift+f7"], "command": "rsl_run_sml"}
 ]

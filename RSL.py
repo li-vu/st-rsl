@@ -23,10 +23,12 @@ def rm_non_sense(str):
 	return str
 
 def process_sml_output(s,fb):
-	pattern = r'[.\s]*open %s' % (fb)
-	s = re.sub(pattern,rm,s)
-	p2 = r'val it = () : unit\n'
-	s = re.sub(p2,rm,s)
+	sml_open_re = re.compile(r'.*open %s\n' % (fb),re.DOTALL)
+	s = sml_open_re.sub(rm,s)
+	sml_val_re = re.compile(r'val it = \(\) : unit\n')
+	s = sml_val_re.sub(rm,s)
+	sml_warning = re.compile(r'X\.sml.*Warning: type vars.*',re.DOTALL)
+	s = sml_warning.sub(rm,s)
 	return s
 	
 def prettyprint(view,edit):
@@ -107,7 +109,7 @@ class RslRunSmlCommand(sublime_plugin.TextCommand):
 		b = splitext(fn)[0]
 		fx = b+".sml"
 		rf = b+".sml-results"
-		(rcode, output) = exec_cmd(["sml","X.sml"])
+		(rcode, output) = exec_cmd(["sml",fx])
 		if rcode == 0:
 			output = process_sml_output(output,b)
 			with open(rf,'w') as f:

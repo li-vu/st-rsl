@@ -1,0 +1,22 @@
+[
+    {
+        "caption": "RSL: Type Check",
+        "command": "rsl_type_check"
+    },
+    {
+        "caption": "RSL: Pretty Print",
+        "command": "rsl_pretty"
+    },
+    {
+        "caption": "RSL: Translate SML",
+        "command": "rsl_to_sml"
+    },
+    {
+        "caption": "RSL: Run SML",
+        "command": "rsl_run_sml"
+    },
+    {
+        "caption": "RSL: Translate to SAL",
+        "command": "rsl_to_sal"
+    }
+]
