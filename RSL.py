@@ -11,6 +11,7 @@ import sublime, sublime_plugin, subprocess, re
 from traceback import print_exc
 from os.path import basename, splitext, dirname
 from os import chdir, getcwd
+from threading import Thread
 import sys
 
 ns = re.compile(r'[ \t\r\f\v]*--[ \t\r\f\v]*\n')
@@ -52,10 +53,10 @@ def wrapped_exec(fn):
 		fb =  basename(filename)
 		d = dirname(filename)
 		cdir = getcwd()
-		print "Change to %s" % (d)
+		print "cd %s" % (d)
 		chdir(d)
 		fn(self,edit)
-		print "Change back to %s" % (cdir)
+		print "cd %s" % (cdir)
 		chdir(cdir)
 	return wrapper
 
@@ -132,23 +133,6 @@ class RslToSalCommand(sublime_plugin.TextCommand):
 		(rcode, output) = exec_cmd(["rsltc","-sal",fn])
 		print output
 
-class RslRunSalSmcCommand(sublime_plugin.TextCommand):
-	"""
-	Run SAL symbolic model checker
-	"""
-	@wrapped_exec
-	def run(self, edit):
-		fn =  basename(self.view.file_name())
-		b = splitext(fn)[0]
-		fx = b+".sal"
-		rf = b+".sal-smc"
-		(rcode, output) = exec_cmd(["sal-smc","-v1","--delta-path",fx])
-		if rcode == 0:
-			with open(rf,'w') as f:
-				f.write(output)
-		print output
-		print "Run SAL-SMC finished. Results are saved in %s" % (rf)
-
 class RslRunSalWfcCommand(sublime_plugin.TextCommand):
 	"""
 	Run SAL wellform checker
@@ -164,19 +148,87 @@ class RslRunSalDeadlockCheckerCommand(sublime_plugin.TextCommand):
 	"""
 	Run SAL deadlock checker
 	"""
-	@wrapped_exec
-	def run(self, edit):
+	def make_cmd(self):
+		cmd = []
 		fn =  basename(self.view.file_name())
+		d = dirname(self.view.file_name())
 		b = splitext(fn)[0]
 		r = sublime.Region(0, self.view.size())
 		s = self.view.substr(r)
 		m = re.search('transition_system\s*\[(.*)\]\s*local',s)
 		if m:
 			tname = m.group(1)
-			(rcode, output) = exec_cmd(["sal-deadlock-checker",b,tname])
-			print output
+			cmd = ["sal-deadlock-checker",b,tname]
 		else:
-			print "No transition system found in %s" %(fn)
+			self.view.set_status('RSL',"No transition system found in %s" %(fn))
+		return (d,cmd)
 
+	def process_output(self,output):
+		print output
+
+	def run(self, edit):
+		(d,cmd) = self.make_cmd()
+		if cmd: 
+			threads = []
+			thread = RslSalThreadCall(cmd,d)
+			threads.append(thread)
+			thread.start()
+			self.handle_threads(threads)
+
+	def handle_threads(self, threads):
+		next_threads = []
+		for thread in threads:
+			if thread.is_alive():
+				next_threads.append(thread)
+				continue
+			if thread.rcode == 0:
+				self.process_output(thread.output)
+		threads = next_threads
+		if len(threads):
+			self.view.set_status('RSL','SAL is running...')
+			sublime.set_timeout(lambda: self.handle_threads(threads), 1000)
+		else:
+			self.view.set_status('RSL','SAL is done...')
+
+class RslRunSalSmcCommand(RslRunSalDeadlockCheckerCommand):
+	"""
+	Run SAL symbolic model checker
+	"""
+	def make_cmd(self):
+		fn =  basename(self.view.file_name())
+		d = dirname(self.view.file_name())
+		b = splitext(fn)[0]
+		fx = b+".sal"
+		rf = b+".sal-smc"
+		cmd = ["sal-smc","-v1","--delta-path",fx]
+		return (d,cmd)
+
+	@wrapped_exec
+	def process_output(self, output):
+		fn =  basename(self.view.file_name())
+		b = splitext(fn)[0]
+		rf = b+".sal-smc"
+		with open(rf,'w') as f:
+			f.write(output)
+		print output
+		print "Run SAL-SMC finished. Results are saved in %s" % (rf)
+
+class RslSalThreadCall(Thread):
+	"""
+	Run RSL SAL command in a thread so we dont block the UI
+	"""
+	def __init__(self,cmd,directory):
+		self.cmd = cmd
+		self.rcode = None
+		self.output = None
+		self.directory = directory
+		Thread.__init__(self)
+
+	def run(self):
+		if self.directory:
+			chdir(self.directory)
+		(rcode, output) = exec_cmd(self.cmd)
+		self.rcode = rcode
+		self.output = output
 
 
