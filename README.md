@@ -3,6 +3,10 @@ Sublime Text 2 - RAISE Specification Language
 
 A Sublime Text 2 package for RAISE Specification Language - [RSL][0]
 
+## Prerequisites
+You should have following software installed and running
+ * [rsltc][3]
+
 ## Installation
 
  * Install [Package Manager][2].
@@ -21,3 +25,4 @@ Created by Linh Vu Hong.
  [0]: http://en.wikipedia.org/wiki/RAISE 
  [1]: https://bitbucket.org/vuhonglinh/sublimetext-rsl
  [2]: http://wbond.net/sublime_packages/package_control
+ [3]: http://www.iist.unu.edu/newrh/III/3/1/docs/rsltc/
