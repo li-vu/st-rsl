@@ -71,6 +71,9 @@ def exec_cmd(cmd):
 	return (rcode, output)
 
 class RslPrettyCommand(sublime_plugin.TextCommand):
+	"""
+	Pretty print
+	"""
 	@wrapped_exec
 	def run(self, edit):
 		e = self.view.begin_edit()
@@ -78,6 +81,9 @@ class RslPrettyCommand(sublime_plugin.TextCommand):
 		self.view.end_edit(e)
 
 class RslTypeCheckCommand(sublime_plugin.TextCommand):
+	"""
+	Type check using rsltc
+	"""
 	@wrapped_exec
 	def run(self, edit):
 		fn = self.view.file_name()
@@ -86,6 +92,9 @@ class RslTypeCheckCommand(sublime_plugin.TextCommand):
 		print output
 
 class RslToSmlCommand(sublime_plugin.TextCommand):
+	"""
+	Translate RSL to SML
+	"""
 	@wrapped_exec
 	def run(self, edit):
 		fn =  basename(self.view.file_name())
@@ -95,14 +104,10 @@ class RslToSmlCommand(sublime_plugin.TextCommand):
 			f.write("OS.Process.exit(OS.Process.success)")
 		print output
 
-class RslToSalCommand(sublime_plugin.TextCommand):
-	@wrapped_exec
-	def run(self, edit):
-		fn =  basename(self.view.file_name())
-		(rcode, output) = exec_cmd(["rsltc","-sal",fn])
-		print output
-
 class RslRunSmlCommand(sublime_plugin.TextCommand):
+	"""
+	Run SML and save results
+	"""
 	@wrapped_exec
 	def run(self, edit):
 		fn =  basename(self.view.file_name())
@@ -117,7 +122,61 @@ class RslRunSmlCommand(sublime_plugin.TextCommand):
 		print output
 		print "Run SML finished. Results are saved in %s" % (rf)
 
+class RslToSalCommand(sublime_plugin.TextCommand):
+	"""
+	Translate RSL to SAL
+	"""
+	@wrapped_exec
+	def run(self, edit):
+		fn =  basename(self.view.file_name())
+		(rcode, output) = exec_cmd(["rsltc","-sal",fn])
+		print output
 
+class RslRunSalSmcCommand(sublime_plugin.TextCommand):
+	"""
+	Run SAL symbolic model checker
+	"""
+	@wrapped_exec
+	def run(self, edit):
+		fn =  basename(self.view.file_name())
+		b = splitext(fn)[0]
+		fx = b+".sal"
+		rf = b+".sal-smc"
+		(rcode, output) = exec_cmd(["sal-smc","-v1","--delta-path",fx])
+		if rcode == 0:
+			with open(rf,'w') as f:
+				f.write(output)
+		print output
+		print "Run SAL-SMC finished. Results are saved in %s" % (rf)
+
+class RslRunSalWfcCommand(sublime_plugin.TextCommand):
+	"""
+	Run SAL wellform checker
+	"""
+	@wrapped_exec
+	def run(self, edit):
+		fn =  basename(self.view.file_name())
+		b = splitext(fn)[0]
+		(rcode, output) = exec_cmd(["sal-wfc",b])
+		print output
+
+class RslRunSalDeadlockCheckerCommand(sublime_plugin.TextCommand):
+	"""
+	Run SAL deadlock checker
+	"""
+	@wrapped_exec
+	def run(self, edit):
+		fn =  basename(self.view.file_name())
+		b = splitext(fn)[0]
+		r = sublime.Region(0, self.view.size())
+		s = self.view.substr(r)
+		m = re.search('transition_system\s*\[(.*)\]\s*local',s)
+		if m:
+			tname = m.group(1)
+			(rcode, output) = exec_cmd(["sal-deadlock-checker",b,tname])
+			print output
+		else:
+			print "No transition system found in %s" %(fn)
 
 
 
