@@ -5,6 +5,7 @@ A Sublime Text 2 package for RAISE Specification Language - [RSL][0]
 
 ## Prerequisites
 You should have following software installed and running
+
  * [rsltc][3]
 
 ## Installation
