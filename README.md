@@ -1,7 +1,7 @@
-Sublime Text 2 - RAISE Specification Language
+Sublime Text 2&3 - RAISE Specification Language
 =============================================
 
-A Sublime Text 2 package for RAISE Specification Language - [RSL][0]
+A Sublime Text package for RAISE Specification Language - [RSL][0]
 
 ## Prerequisites
 You should have following software installed and running
