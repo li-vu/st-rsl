@@ -14,14 +14,14 @@ from os import chdir, getcwd
 from threading import Thread
 import sys
 
-ns = re.compile(r'[ \t\r\f\v]*--[ \t\r\f\v]*\n')
+ns = re.compile(b'[ \t\r\f\v]*--[ \t\r\f\v]*\n')
 
 def rm(m):
 	return ''
 
-def rm_non_sense(str):
-	str = ns.sub(rm,str)
-	return str
+def rm_non_sense(s):
+	sx = ns.sub(rm,s)
+	return sx
 
 def process_sml_output(s,fb):
 	sml_open_re = re.compile(r'.*open %s\n' % (fb),re.DOTALL)
@@ -38,7 +38,7 @@ def prettyprint(view,edit):
 	try:
 		(rcode, output) = exec_cmd(["rsltc","-p",fn])
 		if rcode:
-			print output
+			print(output)
 		else:
 			cleaned = rm_non_sense(output)
 			view.replace(edit, r, cleaned)
@@ -53,10 +53,10 @@ def wrapped_exec(fn):
 		fb =  basename(filename)
 		d = dirname(filename)
 		cdir = getcwd()
-		print "cd %s" % (d)
+		print("cd %s" % (d))
 		chdir(d)
 		fn(self,edit)
-		print "cd %s" % (cdir)
+		print("cd %s" % (cdir))
 		chdir(cdir)
 	return wrapper
 
@@ -77,9 +77,17 @@ class RslPrettyCommand(sublime_plugin.TextCommand):
 	"""
 	@wrapped_exec
 	def run(self, edit):
-		e = self.view.begin_edit()
-		prettyprint(self.view,e)
-		self.view.end_edit(e)
+		r = sublime.Region(0, self.view.size())
+		fn = basename(self.view.file_name())
+		try:
+			(rcode, output) = exec_cmd(["rsltc","-p",fn])
+			if rcode:
+				print(output)
+			else:
+				cleaned = rm_non_sense(output)
+				self.view.replace(edit, r, cleaned.decode('utf-8'))
+		except:
+			print_exc(file=sys.stdout)
 
 class RslTypeCheckCommand(sublime_plugin.TextCommand):
 	"""
@@ -90,7 +98,7 @@ class RslTypeCheckCommand(sublime_plugin.TextCommand):
 		fn = self.view.file_name()
 		fb = basename(fn)
 		(rcode, output) = exec_cmd(["rsltc",fb])
-		print output
+		print(output)
 
 class RslToSmlCommand(sublime_plugin.TextCommand):
 	"""
@@ -103,7 +111,7 @@ class RslToSmlCommand(sublime_plugin.TextCommand):
 		fx = splitext(fn)[0]+".sml"
 		with open(fx,"a") as f:
 			f.write("OS.Process.exit(OS.Process.success)")
-		print output
+		print(output)
 
 class RslRunSmlCommand(sublime_plugin.TextCommand):
 	"""
@@ -120,8 +128,8 @@ class RslRunSmlCommand(sublime_plugin.TextCommand):
 			output = process_sml_output(output,b)
 			with open(rf,'w') as f:
 				f.write(output)
-		print output
-		print "Run SML finished. Results are saved in %s" % (rf)
+		print(output)
+		print("Run SML finished. Results are saved in %s" % (rf))
 
 class RslToSalCommand(sublime_plugin.TextCommand):
 	"""
@@ -131,7 +139,7 @@ class RslToSalCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		fn =  basename(self.view.file_name())
 		(rcode, output) = exec_cmd(["rsltc","-sal",fn])
-		print output
+		print(output)
 
 class RslRunSalWfcCommand(sublime_plugin.TextCommand):
 	"""
@@ -142,7 +150,7 @@ class RslRunSalWfcCommand(sublime_plugin.TextCommand):
 		fn =  basename(self.view.file_name())
 		b = splitext(fn)[0]
 		(rcode, output) = exec_cmd(["sal-wfc",b])
-		print output
+		print(output)
 
 class RslRunSalDeadlockCheckerCommand(sublime_plugin.TextCommand):
 	"""
@@ -164,7 +172,7 @@ class RslRunSalDeadlockCheckerCommand(sublime_plugin.TextCommand):
 		return (d,cmd)
 
 	def process_output(self,output):
-		print output
+		print(output)
 
 	def run(self, edit):
 		(d,cmd) = self.make_cmd()
@@ -210,8 +218,8 @@ class RslRunSalSmcCommand(RslRunSalDeadlockCheckerCommand):
 		rf = b+".sal-smc"
 		with open(rf,'w') as f:
 			f.write(output)
-		print output
-		print "Run SAL-SMC finished. Results are saved in %s" % (rf)
+		print(output)
+		print("Run SAL-SMC finished. Results are saved in %s" % (rf))
 
 class RslSalThreadCall(Thread):
 	"""
