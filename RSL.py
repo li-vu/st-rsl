@@ -14,10 +14,13 @@ from os import chdir, getcwd
 from threading import Thread
 import sys
 
-ns = re.compile(b'[ \t\r\f\v]*--[ \t\r\f\v]*\n')
+ns = re.compile(r'[ \t\r\f\v]*--[ \t\r\f\v]*\n')
 
 def rm(m):
 	return ''
+
+def dc(s):
+	return s.decode('utf-8')
 
 def rm_non_sense(s):
 	sx = ns.sub(rm,s)
@@ -31,19 +34,6 @@ def process_sml_output(s,fb):
 	sml_warning = re.compile(r'X\.sml.*Warning: type vars.*',re.DOTALL)
 	s = sml_warning.sub(rm,s)
 	return s
-	
-def prettyprint(view,edit):
-	r = sublime.Region(0, view.size())
-	fn = basename(view.file_name())
-	try:
-		(rcode, output) = exec_cmd(["rsltc","-p",fn])
-		if rcode:
-			print(output)
-		else:
-			cleaned = rm_non_sense(output)
-			view.replace(edit, r, cleaned)
-	except:
-		pass
 
 def wrapped_exec(fn):
 	""" Decorator for changing dir before and after execution
@@ -69,7 +59,7 @@ def exec_cmd(cmd):
 		rcode = proc.returncode
 	except:
 		print_exc(file=sys.stdout)
-	return (rcode, output)
+	return (rcode, dc(output))
 
 class RslPrettyCommand(sublime_plugin.TextCommand):
 	"""
@@ -85,7 +75,7 @@ class RslPrettyCommand(sublime_plugin.TextCommand):
 				print(output)
 			else:
 				cleaned = rm_non_sense(output)
-				self.view.replace(edit, r, cleaned.decode('utf-8'))
+				self.view.replace(edit, r, cleaned)
 		except:
 			print_exc(file=sys.stdout)
 
