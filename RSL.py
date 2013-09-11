@@ -1,12 +1,16 @@
-# -*- coding: utf-8 -*-
-""" 
-    SublimeText plugin for RAISE Specification Language RSL
-    ~~~~~~~~~~~~~~~~~~~
-    Author: Linh Vu Hong <lvho@dtu.dk>
-
-    :copyright: Copyright 2013 by Linh Vu Hong
-    :license: BSD, see LICENSE for details.
-"""
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+#===============================================================================
+#     File: $Name: RSL.py $
+# Revision: $Rev: 3c3db8f3c96e1dc1fe5fcf884213068d043eaee6 $
+#  Created: $Date: 2013-08-26 22:53:24 $
+# Modified: $Date: 2013-08-26 22:55:16 $
+#   Author: $Author: Linh Vu Hong<lvho@dtu.dk> $
+#-------------------------------------------------------------------------------
+# Description: SublimeText plugin for RAISE Specification Language RSL
+#     :copyright: Copyright 2013 by Linh Vu Hong
+#     :license: BSD, see LICENSE for details.
+#===============================================================================
 import sublime, sublime_plugin, subprocess, re
 from traceback import print_exc
 from os.path import basename, splitext, dirname
