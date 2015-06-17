@@ -4,6 +4,10 @@
     "command": "rsl_type_check"
   },
   {
+    "caption": "RSL: Join Comments",
+    "command": "rsl_join_comments"
+  },
+  {
     "caption": "RSL: Pretty Print",
     "command": "rsl_pretty"
   },
@@ -30,5 +34,15 @@
   {
     "caption": "RSL: Run SAL Symbolic Model Checker",
     "command": "rsl_run_sal_smc"
+  },
+  {
+    "caption": "RSL: Translate to SML and Run",
+    "command": "chain",
+    "args": {
+      "commands":[
+        ["rsl_to_sml"],
+        ["rsl_run_sml"]
+      ]
+    }
   }
 ]
