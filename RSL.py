@@ -2,9 +2,9 @@
 # -*- coding:utf-8 -*-
 #===============================================================================
 #     File: $Name: RSL.py $
-# Revision: $Rev: 3c3db8f3c96e1dc1fe5fcf884213068d043eaee6 $
+# Revision: $Rev: 1db8652a $
 #  Created: $Date: 2013-08-26 22:53:24 $
-# Modified: $Date: 2013-08-26 22:55:16 $
+# Modified: $Date: 2014-06-18 09:30:03 $
 #   Author: $Author: Linh Vu Hong<lvho@dtu.dk> $
 #-------------------------------------------------------------------------------
 # Description: SublimeText plugin for RAISE Specification Language RSL
@@ -44,14 +44,15 @@ def wrapped_exec(fn):
 	"""
 	def wrapper(self,edit):
 		filename = self.view.file_name()
-		fb =  basename(filename)
-		d = dirname(filename)
-		cdir = getcwd()
-		print("cd %s" % (d))
-		chdir(d)
-		fn(self,edit)
-		print("cd %s" % (cdir))
-		chdir(cdir)
+		if filename:
+			fb =  basename(filename)
+			d = dirname(filename)
+			cdir = getcwd()
+			# print("cd %s" % (d))
+			chdir(d)
+			fn(self,edit)
+			# print("cd %s" % (cdir))
+			chdir(cdir)
 	return wrapper
 
 def exec_cmd(cmd):
@@ -73,8 +74,11 @@ class RslPrettyCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
 		r = sublime.Region(0, self.view.size())
 		fn = basename(self.view.file_name())
+		rulers = self.view.settings().get('rulers',[80])
+		# print(rulers)
+		ruler = rulers[0] - 2
 		try:
-			(rcode, output) = exec_cmd(["rsltc","-p",fn])
+			(rcode, output) = exec_cmd(["rsltc","-pl",str(ruler),fn])
 			if rcode:
 				print(output)
 			else:
@@ -233,4 +237,33 @@ class RslSalThreadCall(Thread):
 		self.rcode = rcode
 		self.output = output
 
+class RslJoinCommentsCommand(sublime_plugin.TextCommand):
+    """ Join two or more line comments into a block comment """
+    def run(self,edit):
+        regions = []
+        for r in self.view.sel():
+            regions.append(r)
+        allbuffer = sublime.Region(0, self.view.size())
+        old_viewport_position = self.view.viewport_position()
+        buf = self.view.substr(allbuffer)
+        newbuf = self._join_comments(buf)
+        # print(newbuf)
+        self.view.replace(
+            edit, allbuffer,
+            newbuf)
+        self.view.sel().clear()
+        for r in regions:
+          self.view.sel().add(r)
+        # FIXME: Without the 10ms delay, the viewport sometimes jumps.
+        sublime.set_timeout(lambda: self.view.set_viewport_position(
+            old_viewport_position, False), 10)
+        
+    def _join_comments(self,str):
+        return re.sub(r"(^\s*\-\-.+\n)(^\s*\-\-.+\n|^\s*\n)*",self._join, str,flags=re.MULTILINE)
 
+    def _join(self,m):
+        s = m.group(0)
+        ls = s.split("\n")
+        ls = [ re.sub(r"^[\s-]+","",l[2:].rstrip()) for l in ls if len(l.strip()) > 0]
+        return "/* %s */\n" % ('\n * '.join(ls))
+        # return s

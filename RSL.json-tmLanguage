@@ -59,7 +59,7 @@
     },
     {
       "name": "string.quoted.double.rsl",
-      "match": "\".*\""
+      "match": "\"[^\"]*\""
     },
     {
       "name": "constant.character.rsl",
