@@ -1,29 +1,47 @@
-Sublime Text 2&3 - RAISE Specification Language
-=============================================
+# RSL
 
-A Sublime Text package for RAISE Specification Language - [RSL][0]
+A wrapper in Sublime Text for [rsltc][3], the type checker of RAISE Specification Language - [RSL][0].
 
-## Prerequisites
+# Prerequisites
 You should have following software installed and running
 
- * [rsltc][3]
+- [rsltc][3]
 
-## Installation
+# Install
 
- * Install [Package Manager][2].
- * Use `Cmd+Shift+P` or `Ctrl+Shift+P` then `Package Control: Install Package`.
- * Look for `RSL` and install it.
+The package can be installed using one of the following methods:
 
-If you prefer to install manually, install git, then:
+## Via [Package Control](https://packagecontrol.io) (recommended)
 
-    git clone https://bitbucket.org/vuhonglinh/sublimetext-rsl "<Sublime Text 2 Packages folder>/RSL"
-## Credits
+`Package Control: Install Package > RSL`
 
-This code is available on [Bitbucket][1]. Pull requests are welcome.
+## Manual
 
-Created by Linh Vu Hong.
+1. `Sublime Menu > Preferences > Browse Packages ...`
+2. `git clone https://github.com/li-vu/st-rsl RSL`
+
+# Features
+
+The following commands are available:
+- `Type Check`
+- `Pretty Print`
+- `Translate SML`
+- `Run SML`
+- `Translate to SAL`
+- `Run SAL Wellformed Checker`
+- `Run SAL Deadlock Checker`
+- `Run SAL Symbolic Model Checker`
+- `Translate to SML and Run`: [Chain of Command](https://github.com/jisaacks/ChainOfCommand) is required to run this command.
+- `Join Comments`: Experimental feature allows joining consecutive line comments into a block comment.
+
+# License
+Copyright (C) 2016 [li-vu](https://github.com/li-vu)
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation. <http://www.gnu.org/licenses/gpl.html>
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
  [0]: http://en.wikipedia.org/wiki/RAISE 
- [1]: https://bitbucket.org/vuhonglinh/sublimetext-rsl
- [2]: http://wbond.net/sublime_packages/package_control
- [3]: http://www.iist.unu.edu/newrh/III/3/1/docs/rsltc/
+ [1]: https://github.com/li-vu/st-rsl
+ [2]: https://packagecontrol.io/
+ [3]: https://github.com/dtu-railway-verification/rsltc
