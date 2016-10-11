@@ -24,7 +24,7 @@
     "command": "rsl_to_sal"
   },
   {
-    "caption": "RSL: Run SAL Wellform Checker",
+    "caption": "RSL: Run SAL Wellformed Checker",
     "command": "rsl_run_sal_wfc"
   },
   {
